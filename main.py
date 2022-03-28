@@ -25,47 +25,46 @@ def print_results(qres):
     for row in qres:
         print(row)
 
+def forward_reasoning(path, query):
+    rdf_graph = load_data(path)
+    abox, tbox = extract_abox_and_tbox(rdf_graph)
+    reasoner = ForwardReasoner(abox, tbox)
+    result = reasoner.execute_query(query)
+    return result
+
+def backward_reasoning(path, query):
+    rdf_graph = load_data(path)
+    abox, tbox = extract_abox_and_tbox(rdf_graph)
+    reasoner = BackwardReasoner(abox, tbox)
+    result = reasoner.execute_query(query)
+    return result
+
+
 
 if __name__ == '__main__':
-    # load the ontology from file
-    rdf_graph = load_data('data/ontology.ttl')
-    # extract abox and tbox
-    abox, tbox = extract_abox_and_tbox(rdf_graph)
-    # use a query engine or reasoner to answer the queries
-    reasoner = QueryEngine(abox, tbox)
-    # once the ForwardReasoner is implemented you can uncomment this line and the second query should provide the same
-    # answer as the first query
 
-    #reasoner = ForwardReasoner(abox,tbox)
+    path = 'data/ontology.ttl'
 
-    # once the BackwardReasoner is implemented you can uncomment this line and the second query should provide the same
-    # answer as the first query
-
-    #reasoner = BackwardReasoner(abox,tbox)
-
-    # The first query simply looks for all LightNovels (which does not require reasoning)
-    query1 = '''
+    query_forward = '''
     SELECT ?novel
         WHERE {
             ?novel a <http://www.dbpedia.org/LightNovel>.
         }
     '''
-    # execute the query through the provided functionality of the QueryEngine
-    qres = reasoner.execute_query(query1)
 
-    # we print the results
-    print_results(qres)
 
-    # The second query looks for all CreativeWorks (which does require reasoning)
-    query2 = '''
+    query_backward = '''
     SELECT ?work
         WHERE {
             ?work a <http://www.dbpedia.org/CreativeWork>.
         }
     '''
-    # execute the query through the provided functionality of the QueryEngine
-    qres = reasoner.execute_query(query2)
-    
-    # we print the results
-    print_results(qres)
 
+    # query_result = forward_reasoning(path, query_forward)
+
+    # for subject, property, object in query_result:
+    #     print(subject, property, object)
+
+
+    query_result = backward_reasoning(path, query_backward)
+    print(query_result)
